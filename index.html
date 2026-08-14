@@ -136,6 +136,37 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
 .stepper-s button{width:26px;height:100%;border:0;background:none;font-size:16px;font-weight:600;color:var(--blue);cursor:pointer}
 .stepper-s span{flex:1;text-align:center;font-size:13px;font-weight:700}
 
+/* ---------- лента вниз (крупные карточки) ---------- */
+.recs-feed{padding-bottom:8px}
+.feed{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:620px){.feed{grid-template-columns:1fr 1fr 1fr}}
+.f-card{
+  background:#fff;border-radius:16px;padding:14px 14px 16px;
+  display:flex;flex-direction:column;
+}
+.f-img{
+  height:186px;border-radius:12px;background:#F4F6F8;
+  display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+}
+.f-img svg{height:158px;width:auto}
+.f-name{font-size:15px;font-weight:600;line-height:1.25}
+.f-desc{font-size:12.5px;line-height:1.4;color:#5c6d78;margin-top:6px;flex:1}
+.f-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+.f-pricecol{display:flex;align-items:baseline;gap:8px;min-width:0}
+.f-price{font-size:17px;font-weight:700;white-space:nowrap}
+.f-caps{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.feed-end{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:22px 0 8px;font-size:12.5px;color:var(--muted);
+}
+.spinner{
+  width:15px;height:15px;border-radius:50%;flex:none;
+  border:2px solid #CFE5F2;border-top-color:var(--blue);
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.feed-done{text-align:center;padding:20px 0 6px;font-size:12.5px;color:var(--muted)}
+
 /* ---------- toast ---------- */
 .toast{
   position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:85;
@@ -243,6 +274,16 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
   .p-row{margin-top:5px;gap:6px}
   .p-price{font-size:13.5px}
   .p-caps{font-size:10.5px}
+  .feed{gap:8px}
+  .f-card{padding:11px 11px 13px;border-radius:14px}
+  .f-img{height:142px;margin-bottom:11px}
+  .f-img svg{height:120px}
+  .f-name{font-size:13.5px}
+  .f-desc{font-size:11.5px;margin-top:5px}
+  .f-row{margin-top:11px;gap:6px}
+  .f-pricecol{flex-direction:column;align-items:flex-start;gap:1px}
+  .f-price{font-size:15px}
+  .f-caps{font-size:10.5px}
   .round-btn{width:32px;height:32px}
   .stepper-s{width:66px;height:32px;border-radius:16px}
   .stepper-s button{width:21px;font-size:15px}
@@ -329,6 +370,10 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
 <button class="fab" id="fab">Настройки прототипа</button>
 <div class="panel" id="panel">
   <div class="grp">
+    <h4>Формат витрины</h4>
+    <div id="grpFormat"></div>
+  </div>
+  <div class="grp">
     <h4>Размещение блока</h4>
     <div id="grpPlace"></div>
   </div>
@@ -342,14 +387,33 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
 /* набор намеренно отличается от экрана записи — клиент не должен
    увидеть одни и те же позиции дважды за несколько минут (требование 5) */
 const PRODUCTS = [
-  {id:'immun',  name:'Иммунитет',           price:2390, caps:'60 капсул'},
-  {id:'energy', name:'Энергия и тонус',     price:2690, caps:'60 капсул'},
-  {id:'beauty', name:'Красота и волосы',    price:3190, caps:'60 капсул'},
-  {id:'gut',    name:'Здоровье кишечника',  price:2590, caps:'60 капсул'},
-  {id:'joint',  name:'Суставы и связки',    price:2790, caps:'60 капсул'},
-  {id:'detox',  name:'Детокс и печень',     price:2290, caps:'60 капсул'},
+  {id:'immun',  name:'Иммунитет',          price:2390, caps:'60 капсул', desc:'Витамин D, цинк и селен для защиты в сезон простуд.'},
+  {id:'energy', name:'Энергия и тонус',    price:2690, caps:'60 капсул', desc:'Витамины группы B и железо против упадка сил.'},
+  {id:'beauty', name:'Красота и волосы',   price:3190, caps:'60 капсул', desc:'Коллаген и биотин для кожи, волос и ногтей.'},
+  {id:'gut',    name:'Здоровье кишечника', price:2590, caps:'60 капсул', desc:'Пробиотики и клетчатка для пищеварения.'},
+  {id:'joint',  name:'Суставы и связки',   price:2790, caps:'60 капсул', desc:'Глюкозамин и хондроитин для подвижности.'},
+  {id:'detox',  name:'Детокс и печень',    price:2290, caps:'60 капсул', desc:'Расторопша и NAC для поддержки печени.'},
+  {id:'omega',  name:'Омега-3',            price:1200, caps:'60 капсул', desc:'Комплекс для восполнения железа у беременных, кормящих и вегетарианцев.'},
+  {id:'mg',     name:'Магний и B6',        price:1990, caps:'60 капсул', desc:'Снижает раздражительность и мышечные спазмы.'},
+  {id:'sleepy', name:'Спокойный сон',      price:2890, caps:'60 капсул', desc:'Мелатонин и глицин для засыпания без разбитости.'},
+  {id:'focus2', name:'Память и фокус',     price:2490, caps:'60 капсул', desc:'Гинкго и лецитин для концентрации.'},
+  {id:'heart2', name:'Здоровое сердце',    price:2790, caps:'60 капсул', desc:'Коэнзим Q10 и калий для сосудов.'},
+  {id:'skin',   name:'Чистая кожа',        price:2690, caps:'60 капсул', desc:'Цинк и витамин A против высыпаний.'},
+  {id:'fem2',   name:'Женское здоровье',   price:2950, caps:'60 капсул', desc:'Фолаты и железо для цикла и гемоглобина.'},
+  {id:'male2',  name:'Мужское здоровье',   price:2890, caps:'60 капсул', desc:'Цинк и селен для гормонального фона.'},
+  {id:'eyes',   name:'Зрение',             price:2390, caps:'60 капсул', desc:'Лютеин и зеаксантин при нагрузке на глаза.'},
+  {id:'sport',  name:'Спорт и мышцы',      price:3090, caps:'60 капсул', desc:'Магний и аминокислоты для восстановления.'},
+  {id:'thyro',  name:'Щитовидная железа',  price:2590, caps:'60 капсул', desc:'Йод и селен для обмена веществ.'},
+  {id:'anti',   name:'Антиоксиданты',      price:2790, caps:'60 капсул', desc:'Ресвератрол и витамин C против стресса.'},
 ];
+const CAROUSEL_COUNT = 6;   // по ТЗ в карусели 4-6 позиций
+const FEED_START = 6;
+const FEED_STEP  = 6;
 
+const FORMATS = [
+  {id:'car',  label:'Карусель — по ТЗ'},
+  {id:'feed', label:'Лента вниз — бесконечная прокрутка, как в каталоге'},
+];
 const PLACES = [
   {id:'below', label:'Ниже кнопки записи — кнопка не сдвигается'},
   {id:'above', label:'Выше кнопки записи'},
@@ -361,6 +425,8 @@ const STATES = [
 ];
 
 let place = 'below';
+let format = 'car';
+let feedShown = FEED_START;
 let state = 1;
 let cart = {};
 let toastTimer = null;
@@ -399,30 +465,53 @@ function render(){
   updateBadge();
 }
 
+function control(p){
+  const q = cart[p.id]||0;
+  return q===0
+    ? `<button class="round-btn" data-add="${p.id}" aria-label="В корзину">
+         <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v11M2 7.5h11" stroke="#1098D4" stroke-width="1.9" stroke-linecap="round"/></svg>
+       </button>`
+    : `<div class="stepper-s" data-id="${p.id}">
+         <button data-dec="${p.id}">−</button><span>${q}</span><button data-inc="${p.id}">+</button>
+       </div>`;
+}
+
 function buildRecs(){
   const el = document.createElement('section');
-  el.className='recs';
-  let html = `<div class="recs-head"><h3>Рекомендации к покупке</h3><a class="recs-link" href="#">Все витамины</a></div>
-    <div class="rail">`;
-  for(const p of PRODUCTS){
-    const q = cart[p.id]||0;
-    const control = q===0
-      ? `<button class="round-btn" data-add="${p.id}" aria-label="В корзину">
-           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v11M2 7.5h11" stroke="#1098D4" stroke-width="1.9" stroke-linecap="round"/></svg>
-         </button>`
-      : `<div class="stepper-s" data-id="${p.id}">
-           <button data-dec="${p.id}">−</button><span>${q}</span><button data-inc="${p.id}">+</button>
-         </div>`;
-    html += `<div class="p-card">
-      <div class="p-img">${bottleSVG()}</div>
-      <div class="p-name">${p.name}</div>
-      <div class="p-row">
-        <div class="p-pricecol"><div class="p-price">${fmt(p.price)}</div><div class="p-caps">${p.caps}</div></div>
-        ${control}
-      </div>
-    </div>`;
+  el.className = format==='feed' ? 'recs recs-feed' : 'recs';
+  let html = `<div class="recs-head"><h3>Рекомендации к покупке</h3><a class="recs-link" href="#">Все витамины</a></div>`;
+
+  if(format==='car'){
+    html += `<div class="rail">`;
+    for(const p of PRODUCTS.slice(0, CAROUSEL_COUNT)){
+      html += `<div class="p-card">
+        <div class="p-img">${bottleSVG()}</div>
+        <div class="p-name">${p.name}</div>
+        <div class="p-row">
+          <div class="p-pricecol"><div class="p-price">${fmt(p.price)}</div><div class="p-caps">${p.caps}</div></div>
+          ${control(p)}
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  } else {
+    html += `<div class="feed">`;
+    for(const p of PRODUCTS.slice(0, feedShown)){
+      html += `<div class="f-card">
+        <div class="f-img">${bottleSVG()}</div>
+        <div class="f-name">${p.name}</div>
+        <div class="f-desc">${p.desc}</div>
+        <div class="f-row">
+          <div class="f-pricecol"><span class="f-price">${fmt(p.price)}</span><span class="f-caps">${p.caps}</span></div>
+          ${control(p)}
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+    html += feedShown < PRODUCTS.length
+      ? `<div class="feed-end" id="feedEnd"><span class="spinner"></span>Загружаем ещё</div>`
+      : `<div class="feed-done">Вы посмотрели все витамины</div>`;
   }
-  html += `</div>`;
   el.innerHTML = html;
 
   el.querySelectorAll('[data-add]').forEach(b=>{
@@ -441,6 +530,20 @@ function buildRecs(){
   });
   return el;
 }
+
+/* подгружаем следующую порцию, когда низ ленты подходит к экрану */
+function maybeLoadMore(){
+  if(format!=='feed' || feedShown >= PRODUCTS.length) return;
+  const end = document.getElementById('feedEnd');
+  if(!end) return;
+  if(end.getBoundingClientRect().top < window.innerHeight + 200){
+    feedShown = Math.min(feedShown + FEED_STEP, PRODUCTS.length);
+    render();
+    requestAnimationFrame(maybeLoadMore);   // вдруг новая порция тоже уже в кадре
+  }
+}
+window.addEventListener('scroll', maybeLoadMore, {passive:true});
+window.addEventListener('resize', maybeLoadMore);
 
 function addToCart(id){
   cart[id] = (cart[id]||0) + 1;
@@ -527,6 +630,7 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 /* ---------- состояния ---------- */
 function applyState(){
   cart = {};
+  feedShown = FEED_START;
   hideToast();
   if(state===2){ cart = {energy:1}; }
   if(state===3){ cart = {immun:1}; }
@@ -562,6 +666,10 @@ function checkboxes(containerId, list, stateObj, onPick){
   }
 }
 function renderPanel(){
+  radios('grpFormat', FORMATS, format, id=>{
+    format=id; feedShown=FEED_START; renderPanel(); render();
+    requestAnimationFrame(maybeLoadMore);
+  });
   radios('grpPlace', PLACES, place, id=>{place=id; renderPanel(); render();});
   radios('grpState', STATES, state, id=>{state=id; renderPanel(); applyState();});
 }
