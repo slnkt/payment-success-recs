@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Успешный экран оплаты — витамины (прототип)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1098D4;
+  --blue-light:#63BCE3;
+  --dark:#05131A;
+  --muted:#8CA0AC;
+  --bg:#ffffff;
+  --accent-bg:#EDF8FC;
+  --green:#27AE60;
+  --error:#d10714;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Montserrat",Arial,Helvetica,sans-serif;
+  font-size:14px;color:var(--dark);
+  background:var(--bg);
+  min-height:100vh;
+}
+button{font-family:inherit}
+[hidden]{display:none !important}
+
+.wrap{max-width:520px;margin:0 auto;padding:14px 20px 48px}
+
+/* ---------- header ---------- */
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.hd .logo{height:19px;width:auto;fill:var(--blue);display:block}
+.hd-right{display:flex;align-items:center;gap:10px}
+.icon-btn{
+  width:46px;height:46px;border-radius:50%;background:#F2F4F6;border:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;
+}
+.ava{
+  width:46px;height:46px;border-radius:50%;background:#F2F4F6;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:500;color:var(--dark);
+}
+.badge{
+  position:absolute;top:-2px;right:-2px;
+  min-width:20px;height:20px;border-radius:10px;padding:0 6px;
+  background:var(--blue);color:#fff;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid #fff;
+}
+.badge.pop{animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+
+/* ---------- paid pill ---------- */
+.paid{
+  display:flex;align-items:center;gap:14px;
+  background:#F2F4F6;border-radius:40px;
+  padding:10px 12px 10px 26px;
+  width:fit-content;margin:0 auto 34px;
+  font-size:16px;font-weight:500;
+}
+.paid .tick{
+  width:34px;height:34px;border-radius:50%;background:var(--green);flex:none;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ---------- hero ---------- */
+.hero{width:100%;height:auto;display:block;border-radius:18px;margin-bottom:26px}
+
+h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bottom:10px}
+.lead{font-size:15px;line-height:1.45;text-align:center;color:#4a5a65;margin-bottom:26px}
+
+/* ---------- primary CTA ---------- */
+.btn{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;border:0;border-radius:14px;padding:17px 20px;
+  font-size:15px;font-weight:600;color:#fff;
+  background:linear-gradient(90deg,var(--blue),var(--blue-light));
+  cursor:pointer;transition:opacity .15s,box-shadow .25s;
+}
+.btn:active{opacity:.85}
+.btn:disabled{background:#d4dfe6;color:#93a5b1;cursor:default}
+.cta-book{font-size:16px;padding:18px 20px}
+.cta-book.nudge{animation:nudge 1.1s ease}
+@keyframes nudge{
+  0%,100%{box-shadow:0 0 0 0 rgba(16,152,212,0)}
+  30%{box-shadow:0 0 0 7px rgba(16,152,212,.22)}
+  60%{box-shadow:0 0 0 3px rgba(16,152,212,.12)}
+}
+
+/* ---------- showcase ---------- */
+.recs{background:var(--accent-bg);border-radius:18px;padding:16px 14px;margin:22px 0}
+.recs-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
+.recs-head h3{font-size:15px;font-weight:600;white-space:nowrap}
+.recs-link{font-size:12px;font-weight:600;color:var(--blue);text-decoration:none;white-space:nowrap;flex:none}
+.rail{
+  display:flex;gap:8px;overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  margin:0 -14px;padding:0 14px 4px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.rail::-webkit-scrollbar{display:none}
+.p-card{
+  width:190px;flex:none;background:#fff;border-radius:14px;padding:12px 12px 14px;
+  scroll-snap-align:start;display:flex;flex-direction:column;
+}
+.p-img{
+  height:132px;border-radius:12px;background:#F4F6F8;
+  display:flex;align-items:center;justify-content:center;
+}
+.p-img svg{height:106px;width:auto}
+.p-name{font-size:13.5px;font-weight:600;line-height:1.3;margin:11px 0 0;min-height:35px}
+.p-row{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:6px}
+.p-pricecol{min-width:0}
+.p-price{font-size:15px;font-weight:700;line-height:1.2;white-space:nowrap}
+.p-caps{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap}
+/* кнопка добавления намеренно легче основного действия экрана */
+.round-btn{
+  width:34px;height:34px;border-radius:50%;flex:none;cursor:pointer;
+  background:#fff;border:1.5px solid var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .12s;
+}
+.round-btn:active{transform:scale(.9)}
+.stepper-s{
+  display:flex;align-items:center;justify-content:space-between;
+  height:34px;width:82px;flex:none;
+  border:1.5px solid #CFE5F2;border-radius:17px;background:#fff;
+}
+.stepper-s button{width:26px;height:100%;border:0;background:none;font-size:16px;font-weight:600;color:var(--blue);cursor:pointer}
+.stepper-s span{flex:1;text-align:center;font-size:13px;font-weight:700}
+
+/* ---------- sheet (модалка) ---------- */
+.sheet{
+  position:fixed;inset:0;z-index:80;background:rgba(5,19,26,.45);
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.sheet-card{
+  background:#fff;border-radius:22px 22px 0 0;
+  padding:26px 20px calc(22px + env(safe-area-inset-bottom));
+  width:100%;max-width:520px;text-align:center;
+  animation:sheetUp .28s cubic-bezier(.2,.8,.3,1);
+}
+@keyframes sheetUp{from{transform:translateY(44px);opacity:.4}to{transform:translateY(0);opacity:1}}
+@media(min-width:620px){
+  .sheet{align-items:center;padding:20px}
+  .sheet-card{border-radius:22px}
+}
+.sh-check{
+  width:48px;height:48px;border-radius:50%;background:var(--green);
+  margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+}
+.sheet-card h3{font-size:17px;font-weight:600;margin-bottom:6px}
+.sh-prod{display:flex;align-items:center;gap:12px;text-align:left;background:var(--accent-bg);border-radius:14px;padding:10px 12px;margin:14px 0 10px}
+.sh-prod .im{flex:none;display:flex;background:#F4F6F8;border-radius:10px;padding:6px 10px}
+.sh-prod .im svg{width:34px;height:45px}
+.sh-prod .nm{flex:1;font-size:13px;font-weight:600;line-height:1.35}
+.sh-qty{font-size:12px;color:#5c6d78;font-weight:500;margin-top:2px}
+.sh-prod .pr{font-size:13.5px;font-weight:700;white-space:nowrap}
+.sh-cart{font-size:12.5px;color:#5c6d78;margin-bottom:18px}
+.ghost{
+  width:100%;border:0;background:none;color:var(--blue);
+  font-size:14px;font-weight:600;padding:12px;cursor:pointer;margin-top:2px;
+}
+
+/* ---------- toast (идея для сравнения) ---------- */
+.toast{
+  position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:85;
+  max-width:496px;margin:0 auto;
+  background:var(--dark);color:#fff;border-radius:14px;
+  display:flex;align-items:center;gap:10px;
+  padding:13px 15px;font-size:13px;font-weight:500;
+  box-shadow:0 8px 28px rgba(5,19,26,.35);
+  transform:translateY(16px);opacity:0;pointer-events:none;
+  transition:transform .25s,opacity .25s;
+}
+.toast.show{transform:none;opacity:1;pointer-events:auto}
+.toast .t-im{
+  flex:none;width:30px;height:38px;border-radius:7px;
+  background:rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;
+}
+.toast .t-im svg{height:32px;width:auto}
+.toast .t-txt{flex:1;line-height:1.4}
+.toast button{border:0;background:none;color:var(--blue-light);font-size:13px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}
+
+/* ---------- cart (мок) ---------- */
+.cart{position:fixed;inset:0;z-index:60;background:#F1F4F6;overflow-y:auto}
+.cart-inner{max-width:520px;margin:0 auto;padding:20px 16px 60px}
+.cart-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:500;color:var(--blue);
+  background:none;border:0;cursor:pointer;padding:6px 0;margin-bottom:8px;
+}
+.cart h2{font-size:24px;font-weight:600;margin-bottom:18px}
+.cart-item{
+  background:#fff;border-radius:16px;padding:16px;
+  display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;
+}
+.cart-item .ci-im{flex:none;width:52px;height:66px;background:#F4F6F8;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.cart-item .ci-im svg{height:54px;width:auto}
+.cart-item .ci-info{flex:1;min-width:0}
+.ci-name{font-size:14px;font-weight:600;line-height:1.35}
+.ci-caps{font-size:12px;color:var(--muted);margin-top:2px}
+.ci-src{
+  display:inline-block;font-size:11px;font-weight:600;color:var(--blue);
+  background:var(--accent-bg);border-radius:6px;padding:3px 8px;margin-top:6px;
+}
+.ci-qty{font-size:12.5px;color:var(--muted);margin-top:6px}
+.ci-price{font-size:14px;font-weight:600;white-space:nowrap}
+.cart-sum{background:#fff;border-radius:16px;padding:16px;margin-top:14px}
+.cart-sum h3{font-size:14.5px;font-weight:600;margin-bottom:10px}
+.cs-row{display:flex;justify-content:space-between;font-size:13px;color:#5c6d78;margin-bottom:7px}
+.cs-row:last-child{margin-bottom:0}
+.cart-total{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:16px 4px 14px;font-size:15px;
+}
+.cart-total b{font-size:20px;font-weight:700}
+
+/* ---------- proto panel ---------- */
+.fab{
+  position:fixed;right:14px;bottom:20px;z-index:70;
+  background:var(--dark);color:#fff;border:0;border-radius:24px;
+  padding:11px 16px;font-size:12.5px;font-weight:600;
+  cursor:pointer;box-shadow:0 6px 18px rgba(5,19,26,.3);
+}
+.panel{
+  position:fixed;right:14px;bottom:70px;z-index:70;
+  width:300px;max-width:calc(100vw - 28px);
+  max-height:calc(100vh - 130px);overflow-y:auto;
+  background:#fff;border-radius:16px;
+  box-shadow:0 10px 40px rgba(5,19,26,.25);
+  padding:18px;display:none;
+}
+.panel.open{display:block}
+.panel h4{font-size:13px;font-weight:700;margin-bottom:10px}
+.panel .grp{margin-bottom:16px}
+.panel .grp:last-child{margin-bottom:0}
+.panel label{
+  display:flex;align-items:flex-start;gap:9px;
+  font-size:12.5px;line-height:1.4;padding:7px 8px;border-radius:10px;cursor:pointer;
+}
+.panel label:hover{background:#F3F6F9}
+.panel input{accent-color:var(--blue);margin-top:2px;flex:none}
+.panel label.sel{background:var(--accent-bg);font-weight:600}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><symbol id="wm" viewBox="147.9 256.4 299.6 82.4">
+<path d="M193.2236633,278.9363708c2.300293,2.300293,4.1000977,5.0004883,5.5004883,8.2006836 c1.2998047,3.2001953,2,6.6005859,2,10.5004883c0,4.0004883-0.7001953,7.4003906-2,10.6005859 c-1.2001953,3.0004883-3.2001953,5.9003906-5.5004883,8.2006836s-5.2001953,4.300293-8.4003906,5.5004883 c-3.2001953,1.2998047-6.9003906,2-10.5004883,2c-3.800293,0-7.3007812-0.7001953-10.5009766-2 c-3.2001953-1.4003906-6.1000977-3.2001953-8.4003906-5.5004883s-4.300293-5.0004883-5.5004883-8.2006836 c-1.2998047-3.1000977-2-6.6000977-2-10.6005859v-1.699707v-39.5024414h9.6005859v41.1020508 c0,2.6005859,0.6000977,5.3007812,2.2001953,8.5009766c0.8999023,2.3999023,2.1000977,4.1000977,3.7001953,5.6000977 c1.3999023,1.3999023,3.2001953,2.5,5.2001953,3.2001953c3.7001953,1.2001953,8.0004883,1.2001953,11.7006836,0 c1.800293-0.7001953,3.6005859-1.800293,5.2001953-3.2001953c1.6005859-1.5,2.9003906-3.4003906,3.800293-5.6000977 c0.9003906-2.300293,1.4003906-5.0004883,1.4003906-8.0004883c0-3.2001953-0.5-5.9003906-1.4003906-8.2006836 c-1.1000977-2.5-3.800293-5.2001953-5.6000977-6.300293c-4.6005859-2.800293-7.8007812-2.7001953-12.4008789-2.7001953h-3.300293 v-8.9008789h0.6000977c4.4003906,0,10.3007812,0.2001953,14.8007812,1.300293 C187.1235657,274.1360779,190.9233704,276.7366638,193.2236633,278.9363708z"/>
+<path d="M226.7202454,271.6360779v52.1030273h-10.2006836v-52.1030273H226.7202454z"/>
+<path d="M278.8213196,273.7361755c3.2001953,1.2001953,6.0004883,2.9003906,8.3007812,5.2001953 c2.2001953,2.300293,4.1000977,4.9003906,5.4003906,8.2006836c1.3999023,3.2001953,1.8999023,6.7001953,1.8999023,10.4003906 c0,3.6005859-0.7001953,7.1005859-1.8999023,10.3007812c-1.4003906,3.1000977-3.2001953,5.800293-5.4003906,8.2006836 c-2.300293,2.300293-5.1005859,4-8.3007812,5.4003906c-3.1000977,1.2998047-6.6000977,2-10.300293,2 c-3.6005859,0-7.1005859-0.7001953-10.3007812-2c-3.1000977-1.2001953-5.9003906-3.1000977-8.2006836-5.4003906 c-2.2001953-2.300293-4.2001953-5.1005859-5.4003906-8.2006836c-1.3999023-3.2001953-1.8999023-6.5004883-1.8999023-10.3007812 c0-3.7001953,0.7001953-7.2001953,1.8999023-10.4003906c1.4003906-3.1000977,3.2001953-5.9003906,5.4003906-8.2006836 c2.300293-2.2998047,5.1005859-4,8.2006836-5.2001953c3.2001953-1.2998047,6.7001953-2,10.3007812-2 C272.2212219,271.7361755,275.7212219,272.4363708,278.8213196,273.7361755z M274.3213196,313.9388123 c1.8999023-0.800293,3.5-1.800293,5.1000977-3.2001953c1.5-1.4003906,2.800293-3.1000977,3.6000977-5.4003906 c0.9003906-2.1000977,1.4003906-4.9003906,1.4003906-7.9003906c0-3.1005859-0.5-5.9003906-1.4003906-8.0004883 c-0.7998047-2.300293-2.1000977-4.1005859-3.6000977-5.5004883c-1.6000977-1.3999023-3.300293-2.4003906-5.300293-3.1000977 c-1.8999023-0.7001953-3.800293-1.1000977-5.7001953-1.1000977c-1.9003906,0-3.9003906,0.3999023-5.800293,1.1000977 c-1.9003906,0.699707-3.7001953,1.7001953-5.2006836,3.1000977c-1.6000977,1.3999023-2.7998047,3.2001953-3.7001953,5.5004883 c-0.8999023,2.2001953-1.3999023,4.8999023-1.3999023,8.0004883c0,3.2001953,0.5,5.800293,1.3999023,7.9003906 c0.9003906,2.1000977,2.1000977,4,3.7001953,5.4003906c1.5004883,1.3999023,3.1005859,2.3999023,5.0004883,3.2001953 c2.1000977,0.699707,4.2001953,1,6.1005859,1C270.5210266,314.9388123,272.420929,314.6385193,274.3213196,313.9388123z"/>
+<path d="M347.8198547,277.9363708c2.5009766,2.6000977,4.0009766,5.1005859,4.3007812,7.6005859 c0.4003906,2.800293,0.7001953,5.7001953,0.7001953,8.800293v29.4018555H343.02005v-29.1015625 c0-1.6000977-0.0996094-3.4003906-0.2998047-5.0004883c-0.2001953-2.1000977-0.9003906-3.7001953-2.2001953-5.300293 c-0.9003906-1.2998047-2.2001953-2.2001953-3.6005859-2.8999023c-1.5-0.800293-3.2998047-1.1000977-5.2998047-1.1000977 s-3.8007812,0.2998047-5.2011719,1.1000977c-1.5,0.699707-2.7998047,1.6000977-3.7001953,2.8999023 c-1.1992188,1.6000977-2,3.4003906-2.0996094,5.300293c-0.2001953,1.800293-0.4003906,3.4003906-0.4003906,5.0004883v29.1015625 h-9.7998047v-29.2016602c0-3.1000977,0.1992188-6.0004883,0.6992188-8.800293 c0.6005859-2.7001953,2.2001953-5.2006836,4.6005859-7.8007812c1.2001953-1.3999023,2.7001953-2.5,4.1005859-3.300293 c1.7001953-0.699707,3.0996094-1.3999023,4.5996094-1.7998047c1.4003906-0.5,2.9003906-0.7001953,4.1005859-0.9003906 c1.5-0.199707,2.6005859-0.199707,3.5-0.199707c0.9003906,0,1.8007812,0,3.1005859,0.199707 c1.2001953,0.2001953,2.7001953,0.6000977,4.0996094,0.9003906c1.5009766,0.3999023,2.9003906,0.8999023,4.4003906,1.7998047 C345.02005,275.6365662,346.52005,276.6365662,347.8198547,277.9363708z"/>
+<path d="M378.8188782,271.6360779v52.1030273h-10.2001953v-52.1030273H378.8188782z"/>
+<path d="M445.52005,287.6370544c1.3007812,3.2001953,2.0009766,6.800293,1.8007812,10.3007812v40.9023438h-9.6005859 v-40.9023438c0-2.5004883-0.7001953-5.1005859-1.9003906-8.2006836c-0.9003906-2.300293-2.2001953-4.1000977-3.7998047-5.5004883 c-1.4003906-1.3999023-3.2001953-2.5-5.1005859-3.2001953c-3.7001953-1.199707-8.0009766-1.199707-11.7011719,0 c-1.7998047,0.7001953-3.5,1.800293-5.0996094,3.2001953c-1.6005859,1.4003906-2.9003906,3.4003906-3.8007812,5.5004883 c-0.8994141,2.300293-1.3994141,5.0004883-1.3994141,8.0004883c0,3.2001953,0.5,5.9003906,1.3994141,8.2006836 c1.1005859,2.5,3.8007812,5.2001953,5.5009766,6.2001953c4.5996094,2.9003906,7.7998047,2.7001953,12.4003906,2.7001953h3.2001953 v8.9003906h-0.5c-4.6005859,0-10.3007812-0.199707-14.7011719-1.2998047c-3.7001953-0.8999023-7.5-3.5004883-9.8007812-5.7006836 c-2.2998047-2.2998047-4.2001953-4.8999023-5.5-8.1000977c-1.2001953-3.2001953-1.9003906-6.6005859-1.9003906-10.5009766 c0-3.8999023,0.7001953-7.300293,1.9003906-10.5004883c1.2998047-3,3.2001953-5.9003906,5.5-8.2006836 c2.3007812-2.2998047,5.2001953-4.2001953,8.4013672-5.5c6.5-2.6000977,14.5-2.6000977,20.9003906,0 c3.2001953,1.3999023,6.0009766,3.2001953,8.3007812,5.5C442.3198547,281.7366638,444.3208313,284.4368591,445.52005,287.6370544z"/>
+</symbol></svg>
+
+<div class="wrap">
+
+  <header class="hd">
+    <svg class="logo" viewBox="0 0 299.6 82.4" width="106"><use href="#wm"/></svg>
+    <div class="hd-right">
+      <button class="icon-btn" id="cartBtn" aria-label="Корзина">
+        <svg width="21" height="21" viewBox="0 0 20 20" fill="none"><path d="M3 3h2l1.6 9.2a1.6 1.6 0 0 0 1.58 1.3h6.9a1.6 1.6 0 0 0 1.56-1.22L18.4 6H5.5" stroke="#05131A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.6" cy="17" r="1.3" fill="#05131A"/><circle cx="14.6" cy="17" r="1.3" fill="#05131A"/></svg>
+        <span class="badge" id="cartBadge" hidden>0</span>
+      </button>
+      <div class="ava">ИИ</div>
+    </div>
+  </header>
+
+  <div class="paid">
+    Оплата прошла
+    <span class="tick">
+      <svg width="16" height="13" viewBox="0 0 24 20" fill="none"><path d="M2 10.5l7 7L22 2.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+  </div>
+
+  <svg class="hero" viewBox="0 0 320 190" role="img" aria-label="Медсестра берёт кровь у клиентки дома">
+    <rect width="320" height="190" rx="18" fill="#EFE6DC"/>
+    <rect x="198" y="16" width="88" height="76" rx="6" fill="#F7FAFC"/>
+    <path d="M242 16v76M198 54h88" stroke="#E3E9EE" stroke-width="3"/>
+    <rect x="26" y="62" width="26" height="30" rx="5" fill="#DBCFC1"/>
+    <path d="M39 62c-10-6-12-18-4-24 6 6 7 16 4 24zM39 62c10-5 13-16 6-22-6 5-8 14-6 22z" fill="#8FBF6A"/>
+    <rect x="-4" y="116" width="328" height="78" rx="18" fill="#E3D8CA"/>
+    <rect x="12" y="102" width="296" height="36" rx="15" fill="#EFE7DD"/>
+    <circle cx="104" cy="72" r="21" fill="#EBBE94"/>
+    <path d="M83 76c-4-17 6-31 21-31s25 14 21 31c-6-13-36-13-42 0z" fill="#C98A4B"/>
+    <path d="M76 132c0-19 13-32 28-32s28 13 28 32v12H76z" fill="#3E7BC4"/>
+    <path d="M88 108c10-5 22-5 32 0" stroke="#5BA85A" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="218" cy="70" r="20" fill="#EBBE94"/>
+    <path d="M198 73c-3-16 6-29 20-29s23 13 20 29c-4-10-36-10-40 0z" fill="#7A5A3A"/>
+    <path d="M190 134c0-19 13-32 28-32s28 13 28 32v10h-56z" fill="#8FB3DE"/>
+    <path d="M130 124c16-7 36-9 54-5" stroke="#EBBE94" stroke-width="14" stroke-linecap="round"/>
+    <path d="M176 119c9 0 16 3 20 8" stroke="#F4F7FA" stroke-width="12" stroke-linecap="round"/>
+  </svg>
+
+  <h1>Следующий шаг — сдача крови</h1>
+  <p class="lead">Вы можете сдать дома или в офисе в удобное для себя время</p>
+
+  <div id="slotAbove"></div>
+
+  <button class="btn cta-book" id="ctaBook">Записаться в Лабораторию</button>
+
+  <div id="slotBelow"></div>
+</div>
+
+<!-- модалка добавления -->
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-card">
+    <div class="sh-check">
+      <svg width="20" height="16" viewBox="0 0 24 20" fill="none"><path d="M2 10.5l7 7L22 2.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3>Добавлено в корзину</h3>
+    <div class="sh-prod" id="shProd"></div>
+    <div class="sh-cart" id="shCart"></div>
+    <button class="btn" id="shBook">Продолжить к записи</button>
+    <button class="ghost" id="shToCart">Перейти в корзину</button>
+  </div>
+</div>
+
+<!-- тост (идея для сравнения) -->
+<div class="toast" id="toast">
+  <span class="t-im" id="toastIm"></span>
+  <span class="t-txt" id="toastTxt"></span>
+  <button id="toastBtn">В корзину</button>
+</div>
+
+<!-- корзина (мок) -->
+<div class="cart" id="cart" hidden>
+  <div class="cart-inner">
+    <button class="cart-back" id="cartBack">
+      <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M6 1L1 6l5 5M1 6h12" stroke="#1098D4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Вернуться
+    </button>
+    <h2>Корзина</h2>
+    <div id="cartItems"></div>
+    <div class="cart-sum">
+      <h3>Сумма заказа</h3>
+      <div class="cs-row"><span>Товары</span><span id="cartGoods">0 ₽</span></div>
+      <div class="cs-row"><span>Доставка</span><span>Рассчитаем позже</span></div>
+    </div>
+    <div class="cart-total"><span>К оплате</span><b id="cartTotal">0 ₽</b></div>
+    <button class="btn">Оформить заказ</button>
+  </div>
+</div>
+
+<!-- панель прототипа -->
+<button class="fab" id="fab">Настройки прототипа</button>
+<div class="panel" id="panel">
+  <div class="grp">
+    <h4>Размещение блока</h4>
+    <div id="grpPlace"></div>
+  </div>
+  <div class="grp">
+    <h4>Состояние</h4>
+    <div id="grpState"></div>
+  </div>
+  <div class="grp">
+    <h4>Идеи к обсуждению</h4>
+    <div id="grpIdeas"></div>
+  </div>
+</div>
+
+<script>
+/* набор намеренно отличается от экрана записи — клиент не должен
+   увидеть одни и те же позиции дважды за несколько минут (требование 5) */
+const PRODUCTS = [
+  {id:'immun',  name:'Иммунитет',           price:2390, caps:'60 капсул'},
+  {id:'energy', name:'Энергия и тонус',     price:2690, caps:'60 капсул'},
+  {id:'beauty', name:'Красота и волосы',    price:3190, caps:'60 капсул'},
+  {id:'gut',    name:'Здоровье кишечника',  price:2590, caps:'60 капсул'},
+  {id:'joint',  name:'Суставы и связки',    price:2790, caps:'60 капсул'},
+  {id:'detox',  name:'Детокс и печень',     price:2290, caps:'60 капсул'},
+];
+
+const PLACES = [
+  {id:'below', label:'Ниже кнопки записи — кнопка не сдвигается'},
+  {id:'above', label:'Выше кнопки записи'},
+];
+const STATES = [
+  {id:1, label:'Блок с товарами, корзина пуста'},
+  {id:2, label:'Товар добавлен, модалка'},
+  {id:3, label:'Позиция уже в корзине'},
+  {id:4, label:'Товары не подгрузились'},
+];
+const IDEAS = [
+  {id:'toast', label:'Тост вместо модалки — не уводит от записи, но и не возвращает к ней'},
+];
+
+let place = 'below';
+let state = 1;
+let ideas = {toast:false};
+let cart = {};
+let blockVisible = true;
+let toastTimer = null;
+
+const fmt = n => n.toLocaleString('ru-RU') + ' ₽';
+function plural(n, forms){
+  return n%10===1 && n%100!==11 ? forms[0]
+    : (n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? forms[1] : forms[2]);
+}
+function bottleSVG(){
+  return `<svg viewBox="0 0 64 84" fill="none">
+    <rect x="19" y="4" width="26" height="11" rx="3" fill="#D5DADF"/>
+    <rect x="19" y="4" width="26" height="4" rx="2" fill="#E9EDF0"/>
+    <rect x="22" y="15" width="20" height="4" fill="#3B2B1F"/>
+    <rect x="14" y="18" width="36" height="62" rx="9" fill="#4E3A2A"/>
+    <rect x="18" y="23" width="5" height="52" rx="2.5" fill="#6B5340" opacity=".55"/>
+    <rect x="14" y="36" width="36" height="27" fill="#221A13"/>
+    <text x="32" y="52" text-anchor="middle" font-family="Montserrat,Arial" font-size="8.5" font-weight="600" fill="#fff">bioniq</text>
+  </svg>`;
+}
+
+function cartCount(){ return Object.values(cart).reduce((s,q)=>s+q,0); }
+function cartTotal(){
+  return Object.entries(cart).reduce((s,[id,q])=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    return s + p.price*q;
+  },0);
+}
+
+/* ---------- витрина ---------- */
+function render(){
+  document.getElementById('slotAbove').innerHTML='';
+  document.getElementById('slotBelow').innerHTML='';
+  if(blockVisible){
+    const slot = document.getElementById(place==='above'?'slotAbove':'slotBelow');
+    slot.appendChild(buildRecs());
+  }
+  updateBadge();
+}
+
+function buildRecs(){
+  const el = document.createElement('section');
+  el.className='recs';
+  let html = `<div class="recs-head"><h3>Рекомендации к покупке</h3><a class="recs-link" href="#">Все витамины</a></div>
+    <div class="rail">`;
+  for(const p of PRODUCTS){
+    const q = cart[p.id]||0;
+    const control = q===0
+      ? `<button class="round-btn" data-add="${p.id}" aria-label="В корзину">
+           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v11M2 7.5h11" stroke="#1098D4" stroke-width="1.9" stroke-linecap="round"/></svg>
+         </button>`
+      : `<div class="stepper-s" data-id="${p.id}">
+           <button data-dec="${p.id}">−</button><span>${q}</span><button data-inc="${p.id}">+</button>
+         </div>`;
+    html += `<div class="p-card">
+      <div class="p-img">${bottleSVG()}</div>
+      <div class="p-name">${p.name}</div>
+      <div class="p-row">
+        <div class="p-pricecol"><div class="p-price">${fmt(p.price)}</div><div class="p-caps">${p.caps}</div></div>
+        ${control}
+      </div>
+    </div>`;
+  }
+  html += `</div>`;
+  el.innerHTML = html;
+
+  el.querySelectorAll('[data-add]').forEach(b=>{
+    b.addEventListener('click',()=>addToCart(b.dataset.add));
+  });
+  el.querySelectorAll('[data-inc]').forEach(b=>{
+    b.addEventListener('click',()=>{ cart[b.dataset.inc]++; afterChange(b.dataset.inc,true); });
+  });
+  el.querySelectorAll('[data-dec]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const id = b.dataset.dec;
+      cart[id]--;
+      if(cart[id]<=0) delete cart[id];
+      afterChange(id,false);
+    });
+  });
+  return el;
+}
+
+function addToCart(id){
+  cart[id] = (cart[id]||0) + 1;
+  render();
+  confirmAdd(id);
+}
+function afterChange(id, grew){
+  render();
+  popBadge();
+  if(ideas.toast && grew && cart[id]) showToast(id);
+  if(!cart[id]) hideToast();
+}
+function confirmAdd(id){
+  popBadge();
+  if(ideas.toast) showToast(id);
+  else openSheet(id);
+}
+
+/* ---------- модалка ---------- */
+function openSheet(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  const q = cart[id];
+  document.getElementById('shProd').innerHTML = `
+    <div class="im">${bottleSVG()}</div>
+    <div class="nm">${p.name}<div class="sh-qty">${q>1 ? q+' '+plural(q,['упаковка','упаковки','упаковок'])+', ' : ''}${p.caps}</div></div>
+    <div class="pr">${fmt(p.price*q)}</div>`;
+  const n = cartCount();
+  document.getElementById('shCart').textContent =
+    `В корзине ${n} ${plural(n,['товар','товара','товаров'])} на ${fmt(cartTotal())}`;
+  document.getElementById('sheet').hidden = false;
+}
+function closeSheet(){ document.getElementById('sheet').hidden = true; }
+
+/* основное действие модалки возвращает к записи, а не в корзину */
+document.getElementById('shBook').addEventListener('click', ()=>{
+  closeSheet();
+  backToBooking();
+});
+document.getElementById('sheet').addEventListener('click', e=>{ if(e.target.id==='sheet') closeSheet(); });
+document.getElementById('shToCart').addEventListener('click', ()=>{ closeSheet(); openCart(); });
+
+function backToBooking(){
+  const b = document.getElementById('ctaBook');
+  b.scrollIntoView({block:'center', behavior:'smooth'});
+  b.classList.remove('nudge');
+  void b.offsetWidth;
+  b.classList.add('nudge');
+}
+document.getElementById('ctaBook').addEventListener('click', ()=>{
+  alert('Переход к записи в лабораторию — основной сценарий экрана');
+});
+
+/* ---------- тост ---------- */
+function showToast(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  const q = cart[id];
+  document.getElementById('toastIm').innerHTML = bottleSVG();
+  document.getElementById('toastTxt').textContent =
+    q>1 ? `${p.name} — в корзине, ${q} ${plural(q,['упаковка','упаковки','упаковок'])}`
+        : `${p.name} — в корзине`;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 3500);
+}
+function hideToast(){
+  document.getElementById('toast').classList.remove('show');
+  clearTimeout(toastTimer);
+}
+document.getElementById('toastBtn').addEventListener('click', ()=>{ hideToast(); openCart(); });
+
+/* ---------- бейдж и корзина ---------- */
+function updateBadge(){
+  const b = document.getElementById('cartBadge');
+  const n = cartCount();
+  b.hidden = n===0;
+  b.textContent = n;
+}
+function popBadge(){
+  const b = document.getElementById('cartBadge');
+  b.classList.remove('pop');
+  void b.offsetWidth;
+  b.classList.add('pop');
+}
+function openCart(){
+  hideToast();
+  const wrap = document.getElementById('cartItems');
+  const rows = Object.entries(cart).map(([id,q])=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    return `<div class="cart-item">
+      <div class="ci-im">${bottleSVG()}</div>
+      <div class="ci-info">
+        <div class="ci-name">${p.name}</div>
+        <div class="ci-caps">${p.caps}</div>
+        <span class="ci-src">Источник: успешный экран оплаты</span>
+        <div class="ci-qty">${q} ${plural(q,['упаковка','упаковки','упаковок'])}${q>1?` × ${fmt(p.price)}`:''}</div>
+      </div>
+      <div class="ci-price">${fmt(p.price*q)}</div>
+    </div>`;
+  });
+  wrap.innerHTML = rows.join('') || '<p style="color:#8CA0AC;font-size:13.5px">Корзина пуста</p>';
+  document.getElementById('cartGoods').textContent = fmt(cartTotal());
+  document.getElementById('cartTotal').textContent = fmt(cartTotal());
+  document.getElementById('cart').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+document.getElementById('cartBack').addEventListener('click', ()=>{
+  document.getElementById('cart').hidden = true;
+  document.body.style.overflow = '';
+});
+document.getElementById('cartBtn').addEventListener('click', openCart);
+
+/* ---------- состояния ---------- */
+function applyState(){
+  cart = {};
+  blockVisible = true;
+  closeSheet();
+  hideToast();
+  if(state===2){ cart = {energy:1}; }
+  if(state===3){ cart = {immun:1}; }
+  if(state===4){ blockVisible = false; }
+  render();
+  if(state===2) confirmAdd('energy');
+}
+
+/* ---------- панель ---------- */
+const fab = document.getElementById('fab');
+const panel = document.getElementById('panel');
+fab.addEventListener('click',()=>panel.classList.toggle('open'));
+
+function radios(containerId, list, current, onPick){
+  const c = document.getElementById(containerId);
+  c.innerHTML='';
+  for(const it of list){
+    const l = document.createElement('label');
+    if(String(it.id)===String(current)) l.className='sel';
+    l.innerHTML = `<input type="radio" name="${containerId}" ${String(it.id)===String(current)?'checked':''}> ${it.label}`;
+    l.querySelector('input').addEventListener('change',()=>onPick(it.id));
+    c.appendChild(l);
+  }
+}
+function checkboxes(containerId, list, stateObj, onPick){
+  const c = document.getElementById(containerId);
+  c.innerHTML='';
+  for(const it of list){
+    const l = document.createElement('label');
+    if(stateObj[it.id]) l.className='sel';
+    l.innerHTML = `<input type="checkbox" ${stateObj[it.id]?'checked':''}> ${it.label}`;
+    l.querySelector('input').addEventListener('change',e=>onPick(it.id, e.target.checked));
+    c.appendChild(l);
+  }
+}
+function renderPanel(){
+  radios('grpPlace', PLACES, place, id=>{place=id; renderPanel(); render();});
+  radios('grpState', STATES, state, id=>{state=id; renderPanel(); applyState();});
+  checkboxes('grpIdeas', IDEAS, ideas, (id,on)=>{
+    ideas[id]=on;
+    closeSheet(); hideToast();
+    renderPanel(); render();
+  });
+}
+
+/* init */
+renderPanel();
+applyState();
+if(window.innerWidth>900) panel.classList.add('open');
+</script>
+</body>
+</html>
