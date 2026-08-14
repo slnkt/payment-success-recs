@@ -136,40 +136,7 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
 .stepper-s button{width:26px;height:100%;border:0;background:none;font-size:16px;font-weight:600;color:var(--blue);cursor:pointer}
 .stepper-s span{flex:1;text-align:center;font-size:13px;font-weight:700}
 
-/* ---------- sheet (модалка) ---------- */
-.sheet{
-  position:fixed;inset:0;z-index:80;background:rgba(5,19,26,.45);
-  display:flex;align-items:flex-end;justify-content:center;
-}
-.sheet-card{
-  background:#fff;border-radius:22px 22px 0 0;
-  padding:26px 20px calc(22px + env(safe-area-inset-bottom));
-  width:100%;max-width:520px;text-align:center;
-  animation:sheetUp .28s cubic-bezier(.2,.8,.3,1);
-}
-@keyframes sheetUp{from{transform:translateY(44px);opacity:.4}to{transform:translateY(0);opacity:1}}
-@media(min-width:620px){
-  .sheet{align-items:center;padding:20px}
-  .sheet-card{border-radius:22px}
-}
-.sh-check{
-  width:48px;height:48px;border-radius:50%;background:var(--green);
-  margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
-}
-.sheet-card h3{font-size:17px;font-weight:600;margin-bottom:6px}
-.sh-prod{display:flex;align-items:center;gap:12px;text-align:left;background:var(--accent-bg);border-radius:14px;padding:10px 12px;margin:14px 0 10px}
-.sh-prod .im{flex:none;display:flex;background:#F4F6F8;border-radius:10px;padding:6px 10px}
-.sh-prod .im svg{width:34px;height:45px}
-.sh-prod .nm{flex:1;font-size:13px;font-weight:600;line-height:1.35}
-.sh-qty{font-size:12px;color:#5c6d78;font-weight:500;margin-top:2px}
-.sh-prod .pr{font-size:13.5px;font-weight:700;white-space:nowrap}
-.sh-cart{font-size:12.5px;color:#5c6d78;margin-bottom:18px}
-.ghost{
-  width:100%;border:0;background:none;color:var(--blue);
-  font-size:14px;font-weight:600;padding:12px;cursor:pointer;margin-top:2px;
-}
-
-/* ---------- toast (идея для сравнения) ---------- */
+/* ---------- toast ---------- */
 .toast{
   position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:85;
   max-width:496px;margin:0 auto;
@@ -273,11 +240,12 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
   .p-img svg{height:86px}
   .p-name{font-size:12.5px;margin-top:9px;min-height:32px}
   .p-row{margin-top:5px;gap:6px}
-  .p-price{font-size:14px}
+  .p-price{font-size:13.5px}
   .p-caps{font-size:10.5px}
-  .round-btn,.stepper-s{width:32px;height:32px}
-  .stepper-s{width:76px;border-radius:16px}
-  .stepper-s button{width:24px}
+  .round-btn{width:32px;height:32px}
+  .stepper-s{width:66px;height:32px;border-radius:16px}
+  .stepper-s button{width:21px;font-size:15px}
+  .stepper-s span{font-size:12.5px}
 }
 /* низкие экраны — плотнее по вертикали */
 @media(max-height:700px){
@@ -328,21 +296,7 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
   <div id="slotBelow"></div>
 </div>
 
-<!-- модалка добавления -->
-<div class="sheet" id="sheet" hidden>
-  <div class="sheet-card">
-    <div class="sh-check">
-      <svg width="20" height="16" viewBox="0 0 24 20" fill="none"><path d="M2 10.5l7 7L22 2.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <h3>Добавлено в корзину</h3>
-    <div class="sh-prod" id="shProd"></div>
-    <div class="sh-cart" id="shCart"></div>
-    <button class="btn" id="shBook">Продолжить к записи</button>
-    <button class="ghost" id="shToCart">Перейти в корзину</button>
-  </div>
-</div>
-
-<!-- тост (идея для сравнения) -->
+<!-- тост-подтверждение -->
 <div class="toast" id="toast">
   <span class="t-im" id="toastIm"></span>
   <span class="t-txt" id="toastTxt"></span>
@@ -379,10 +333,6 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
     <h4>Состояние</h4>
     <div id="grpState"></div>
   </div>
-  <div class="grp">
-    <h4>Идеи к обсуждению</h4>
-    <div id="grpIdeas"></div>
-  </div>
 </div>
 
 <script>
@@ -403,19 +353,13 @@ const PLACES = [
 ];
 const STATES = [
   {id:1, label:'Блок с товарами, корзина пуста'},
-  {id:2, label:'Товар добавлен, модалка'},
+  {id:2, label:'Товар добавлен, подтверждение'},
   {id:3, label:'Позиция уже в корзине'},
-  {id:4, label:'Товары не подгрузились'},
-];
-const IDEAS = [
-  {id:'toast', label:'Тост вместо модалки — не уводит от записи, но и не возвращает к ней'},
 ];
 
 let place = 'below';
 let state = 1;
-let ideas = {toast:false};
 let cart = {};
-let blockVisible = true;
 let toastTimer = null;
 
 const fmt = n => n.toLocaleString('ru-RU') + ' ₽';
@@ -447,10 +391,8 @@ function cartTotal(){
 function render(){
   document.getElementById('slotAbove').innerHTML='';
   document.getElementById('slotBelow').innerHTML='';
-  if(blockVisible){
-    const slot = document.getElementById(place==='above'?'slotAbove':'slotBelow');
-    slot.appendChild(buildRecs());
-  }
+  const slot = document.getElementById(place==='above'?'slotAbove':'slotBelow');
+  slot.appendChild(buildRecs());
   updateBadge();
 }
 
@@ -505,41 +447,18 @@ function addToCart(id){
 function afterChange(id, grew){
   render();
   popBadge();
-  if(ideas.toast && grew && cart[id]) showToast(id);
+  if(grew && cart[id]) showToast(id);
   if(!cart[id]) hideToast();
 }
 function confirmAdd(id){
   popBadge();
-  if(ideas.toast) showToast(id);
-  else openSheet(id);
+  showToast(id);
+  nudgeBooking();   // напоминаем, что основное действие — запись
 }
 
-/* ---------- модалка ---------- */
-function openSheet(id){
-  const p = PRODUCTS.find(x=>x.id===id);
-  const q = cart[id];
-  document.getElementById('shProd').innerHTML = `
-    <div class="im">${bottleSVG()}</div>
-    <div class="nm">${p.name}<div class="sh-qty">${q>1 ? q+' '+plural(q,['упаковка','упаковки','упаковок'])+', ' : ''}${p.caps}</div></div>
-    <div class="pr">${fmt(p.price*q)}</div>`;
-  const n = cartCount();
-  document.getElementById('shCart').textContent =
-    `В корзине ${n} ${plural(n,['товар','товара','товаров'])} на ${fmt(cartTotal())}`;
-  document.getElementById('sheet').hidden = false;
-}
-function closeSheet(){ document.getElementById('sheet').hidden = true; }
-
-/* основное действие модалки возвращает к записи, а не в корзину */
-document.getElementById('shBook').addEventListener('click', ()=>{
-  closeSheet();
-  backToBooking();
-});
-document.getElementById('sheet').addEventListener('click', e=>{ if(e.target.id==='sheet') closeSheet(); });
-document.getElementById('shToCart').addEventListener('click', ()=>{ closeSheet(); openCart(); });
-
-function backToBooking(){
+/* ---------- основное действие экрана ---------- */
+function nudgeBooking(){
   const b = document.getElementById('ctaBook');
-  b.scrollIntoView({block:'center', behavior:'smooth'});
   b.classList.remove('nudge');
   void b.offsetWidth;
   b.classList.add('nudge');
@@ -611,12 +530,9 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 /* ---------- состояния ---------- */
 function applyState(){
   cart = {};
-  blockVisible = true;
-  closeSheet();
   hideToast();
   if(state===2){ cart = {energy:1}; }
   if(state===3){ cart = {immun:1}; }
-  if(state===4){ blockVisible = false; }
   render();
   if(state===2) confirmAdd('energy');
 }
@@ -651,11 +567,6 @@ function checkboxes(containerId, list, stateObj, onPick){
 function renderPanel(){
   radios('grpPlace', PLACES, place, id=>{place=id; renderPanel(); render();});
   radios('grpState', STATES, state, id=>{state=id; renderPanel(); applyState();});
-  checkboxes('grpIdeas', IDEAS, ideas, (id,on)=>{
-    ideas[id]=on;
-    closeSheet(); hideToast();
-    renderPanel(); render();
-  });
 }
 
 /* init */
