@@ -140,22 +140,23 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
 .toast{
   position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:85;
   max-width:496px;margin:0 auto;
-  background:var(--dark);color:#fff;border-radius:14px;
-  display:flex;align-items:center;gap:10px;
-  padding:13px 15px;font-size:13px;font-weight:500;
-  box-shadow:0 8px 28px rgba(5,19,26,.35);
+  background:linear-gradient(90deg,#7CC3E4,var(--blue));color:#fff;border-radius:18px;
+  display:flex;align-items:center;gap:12px;
+  padding:9px 9px 9px 16px;font-size:13px;font-weight:500;
+  box-shadow:0 8px 26px rgba(16,152,212,.34);
   transform:translateY(16px);opacity:0;pointer-events:none;
   transition:transform .25s,opacity .25s;
 }
 .toast.show{transform:none;opacity:1;pointer-events:auto}
-.toast .t-im{
-  flex:none;width:30px;height:38px;border-radius:7px;
-  background:rgba(255,255,255,.12);
-  display:flex;align-items:center;justify-content:center;
+.toast .t-ic{display:flex;flex:none}
+.toast .t-txt{flex:1;line-height:1.35}
+.toast button{
+  flex:none;border:0;cursor:pointer;white-space:nowrap;
+  background:#fff;color:var(--dark);border-radius:22px;
+  padding:11px 20px;font-size:13px;font-weight:600;
+  transition:transform .12s;
 }
-.toast .t-im svg{height:32px;width:auto}
-.toast .t-txt{flex:1;line-height:1.4}
-.toast button{border:0;background:none;color:var(--blue-light);font-size:13px;font-weight:700;cursor:pointer;padding:4px 2px;white-space:nowrap}
+.toast button:active{transform:scale(.96)}
 
 /* ---------- cart (мок) ---------- */
 .cart{position:fixed;inset:0;z-index:60;background:#F1F4F6;overflow-y:auto}
@@ -298,8 +299,10 @@ h1{font-size:23px;font-weight:600;line-height:1.28;text-align:center;margin-bott
 
 <!-- тост-подтверждение -->
 <div class="toast" id="toast">
-  <span class="t-im" id="toastIm"></span>
-  <span class="t-txt" id="toastTxt"></span>
+  <span class="t-ic">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10" stroke="#fff" stroke-width="1.5"/><path d="M6.6 11.2l3 3 5.8-6.3" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </span>
+  <span class="t-txt">Товар добавлен<br>в корзину</span>
   <button id="toastBtn">В корзину</button>
 </div>
 
@@ -447,12 +450,12 @@ function addToCart(id){
 function afterChange(id, grew){
   render();
   popBadge();
-  if(grew && cart[id]) showToast(id);
+  if(grew && cart[id]) showToast();
   if(!cart[id]) hideToast();
 }
 function confirmAdd(id){
   popBadge();
-  showToast(id);
+  showToast();
   nudgeBooking();   // напоминаем, что основное действие — запись
 }
 
@@ -468,13 +471,7 @@ document.getElementById('ctaBook').addEventListener('click', ()=>{
 });
 
 /* ---------- тост ---------- */
-function showToast(id){
-  const p = PRODUCTS.find(x=>x.id===id);
-  const q = cart[id];
-  document.getElementById('toastIm').innerHTML = bottleSVG();
-  document.getElementById('toastTxt').textContent =
-    q>1 ? `${p.name} — в корзине, ${q} ${plural(q,['упаковка','упаковки','упаковок'])}`
-        : `${p.name} — в корзине`;
+function showToast(){
   const t = document.getElementById('toast');
   t.classList.add('show');
   clearTimeout(toastTimer);
